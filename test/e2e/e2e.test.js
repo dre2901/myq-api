@@ -1,4 +1,4 @@
-const MyQ = require('../../src/MyQ.js');
+const MyQ = require('../../src/MyQ');
 
 test('login() fails when credentials are incorrect', async () => {
   const account = new MyQ();

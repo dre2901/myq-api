@@ -8,12 +8,13 @@
 ![GitHub](https://img.shields.io/github/license/thomasmunduchira/myq-api)
 
 Interface with your [myQ](https://www.myq.com/products) devices using this npm module. Works with both Chamberlain and LiftMaster.
+Fork of the original implementation done by Thomas Munduchira <thomas@thomasmunduchira.com> (https://thomasmunduchira.com/)".
 
 Supports:
 * Opening or closing a door.
 * Checking whether a door is open or closed.
-* Turning on or turning off a light.
-* Checking whether a light is turned on or turned off.
+* Turning on or turning off a light/lamp.
+* Checking whether a light/lamp is turned on or turned off.
 * Getting the metadata and state of all devices on an account.
 * Getting the metadata and state of a specific device.
 * A few other advanced usages documented below.
@@ -21,12 +22,12 @@ Supports:
 ## Installation
 
 ```bash
-npm install myq-api
+npm install @dre2901/myq-api
 ```
 
 ## Examples
 
-See [example.js](https://github.com/thomasmunduchira/myq-api/blob/master/example.js) and [example_async.js](https://github.com/thomasmunduchira/myq-api/blob/master/example_async.js) for end-to-end examples of using this module. Configure `EMAIL` and `PASSWORD` in these examples to enable running them against your own myQ account!
+See [example.js](https://github.com/dre2901/myq-api/blob/master/example.js) and [example_async.js](https://github.com/dre2901/myq-api/blob/master/example_async.js) for end-to-end examples of using this module. Configure `EMAIL` and `PASSWORD` in these examples to enable running them against your own myQ account!
 
 ## API
 * [new MyQ()](#new-myq)
@@ -35,8 +36,10 @@ See [example.js](https://github.com/thomasmunduchira/myq-api/blob/master/example
 * [getDevice(serialNumber)](#getdeviceserialnumber)
 * [getDoorState(serialNumber)](#getdoorstateserialnumber)
 * [getLightState(serialNumber)](#getlightstateserialnumber)
+* [getLampState(serialNumber)](#getlampstateserialnumber)
 * [setDoorState(serialNumber, action)](#setdoorstateserialnumber-action)
 * [setLightState(serialNumber, action)](#setlightstateserialnumber-action)
+* [setLampState(serialNumber, action)](#setlampstateserialnumber-action)
 * [_getAccountId()](#_getaccountid)
 * [_getDeviceState(serialNumber, _stateAttribute)](#_getdevicestateserialnumber-_stateattribute)
 * [_setDeviceState(serialNumber, _action, _stateAttribute)](#_setdevicestateserialnumber-_action-_stateattribute)
@@ -341,6 +344,63 @@ For [robust error handling](#error-handling), catch and handle the following err
 * `DEVICE_NOT_FOUND`
 * `INVALID_DEVICE`
 
+### getLampState(serialNumber)
+
+Check whether a lamp on the myQ account is turned on or turned off.
+
+login() must be called before this.
+
+| Parameter    | Required | Type    | Details                |
+|--------------|----------|---------|------------------------|
+| serialNumber | yes      | string  | Serial number of lamp |
+
+Example:
+```js
+const MyQ = require('myq-api');
+
+const account = new MyQ();
+account.login(email, password)
+  .then(function(result) {
+    return account.getLampState(serialNumber)
+  }).then(function (result) {
+    console.log(result);
+  }).catch(function (error) {
+    console.error(error);
+  });
+```
+
+async/await example:
+```js
+const MyQ = require('myq-api');
+
+async function getLampState() {
+  try {
+    const account = new MyQ();
+    await account.login(email, password);
+    const result = await account.getLampState(serialNumber);
+    console.log(result);
+  } catch (error) {
+    console.error(error);
+  }
+}
+```
+
+Returned object if call is successful:
+```js
+{
+  "code": "OK"
+  "deviceState": <deviceState>
+}
+```
+
+For [robust error handling](#error-handling), catch and handle the following errors:
+* `INVALID_ARGUMENT` (if argument is not sufficiently validated beforehand)
+* `LOGIN_REQUIRED`
+* `SERVICE_REQUEST_FAILED`
+* `SERVICE_UNREACHABLE`
+* `INVALID_SERVICE_RESPONSE`
+* `DEVICE_NOT_FOUND`
+* `INVALID_DEVICE`
 ### setDoorState(serialNumber, action)
 
 Open or close a door on the myQ account.
@@ -434,6 +494,64 @@ async function setLightState() {
     const account = new MyQ();
     await account.login(email, password);
     const result = await account.setLightState(serialNumber, MyQ.actions.light.TURN_ON);
+    console.log(result);
+  } catch (error) {
+    console.error(error);
+  }
+}
+```
+
+Returned object if call is successful:
+```js
+{
+  "code": "OK"
+}
+```
+
+For [robust error handling](#error-handling), catch and handle the following errors:
+* `INVALID_ARGUMENT` (if arguments are not sufficiently validated beforehand)
+* `LOGIN_REQUIRED`
+* `SERVICE_REQUEST_FAILED`
+* `SERVICE_UNREACHABLE`
+* `INVALID_SERVICE_RESPONSE`
+* `DEVICE_NOT_FOUND`
+* `INVALID_DEVICE`
+
+### setLampState(serialNumber, action)
+
+Turn on or turn off a lamp on the myQ account.
+
+login() must be called before this.
+
+| Parameter    | Required | Type   | Details                                                                                         |
+|--------------|----------|--------|-------------------------------------------------------------------------------------------------|
+| serialNumber | yes      | string | Serial number of lamp                                                                          |
+| action       | yes      | symbol | Action to request on lamp (either `MyQ.actions.lamp.TURN_ON` or `MyQ.actions.lamp.TURN_OFF`) |
+
+Example:
+```js
+const MyQ = require('myq-api');
+
+const account = new MyQ();
+account.login(email, password)
+  .then(function(result) {
+    return account.setLampState(serialNumber, MyQ.actions.lamp.TURN_ON)
+  }).then(function (result) {
+    console.log(result);
+  }).catch(function (error) {
+    console.error(error);
+  });
+```
+
+async/await example:
+```js
+const MyQ = require('myq-api');
+
+async function setLampState() {
+  try {
+    const account = new MyQ();
+    await account.login(email, password);
+    const result = await account.setLampState(serialNumber, MyQ.actions.lamp.TURN_ON);
     console.log(result);
   } catch (error) {
     console.error(error);
@@ -728,7 +846,7 @@ Returned object if a call is unsuccessful:
 }
 ```
 
-Since the underlying myQ API is volatile, there might be changes unforeseen by the current version of this software. If you encounter an unexpected error, please create a [GitHub issue](https://github.com/thomasmunduchira/myq-api/issues).
+Since the underlying myQ API is volatile, there might be changes unforeseen by the current version of this software. If you encounter an unexpected error, please create a [GitHub issue](https://github.com/dre2901/myq-api/issues).
 
 NOTE: It is recommended that error codes are checked against the provided constants (`MyQ.constants.codes`) instead of hardcoded raw strings.
 
@@ -785,4 +903,4 @@ The [debug](https://www.npmjs.com/package/debug) module has been integrated to l
 
 ## License
 
-[MIT](https://github.com/thomasmunduchira/myq-api/blob/master/LICENSE)
+[MIT](https://github.com/dre2901/myq-api/blob/master/LICENSE)

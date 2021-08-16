@@ -25,10 +25,15 @@ const constants = {
       turnOn: 'turnon',
       turnOff: 'turnoff',
     },
+    lamp: {
+      turnOn: 'turnon',
+      turnOff: 'turnoff',
+    },
   },
   _stateAttributes: {
     doorState: 'door_state',
     lightState: 'light_state',
+    lampState: 'lamp_state',
   },
   _baseUrls: {
     auth: `https://api.myqdevice.com/api/${authVersion}`,

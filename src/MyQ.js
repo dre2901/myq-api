@@ -299,6 +299,51 @@ class MyQ {
   }
 
   /**
+   * Check whether a light on the myQ account is turned on or turned off.
+   *
+   * login() must be called before this.
+   *
+   * @param {string} serialNumber Serial number of lamp
+   * @returns {object} containing a success code and the state of the lamp
+   * @throws {MyQError} INVALID_ARGUMENT
+   * @throws {MyQError} LOGIN_REQUIRED
+   * @throws {MyQError} SERVICE_REQUEST_FAILED
+   * @throws {MyQError} SERVICE_UNREACHABLE
+   * @throws {MyQError} INVALID_SERVICE_RESPONSE
+   * @throws {MyQError} DEVICE_NOT_FOUND
+   * @throws {MyQError} INVALID_DEVICE
+   */
+  async getLampState(serialNumber) {
+    if (serialNumber === undefined) {
+      throw new MyQError(
+        'Serial number parameter is not specified.',
+        constants.codes.INVALID_ARGUMENT
+      );
+    }
+    if (typeof serialNumber !== 'string') {
+      throw new MyQError(
+        'Specified serial number parameter is not a string.',
+        constants.codes.INVALID_ARGUMENT
+      );
+    }
+
+    try {
+      return await this._getDeviceState(serialNumber, constants._stateAttributes.lampState);
+    } catch (error) {
+      if (error.code === constants.codes.DEVICE_STATE_NOT_FOUND) {
+        // If the state attribute is not found on the device, we assume this is because the device
+        // is not a lamp and not because the service returned something invalid.
+        throw new MyQError(
+          `Device with serial number '${serialNumber}' is not a lamp.`,
+          constants.codes.INVALID_DEVICE
+        );
+      }
+
+      throw error;
+    }
+  }
+
+  /**
    * Open or close a door on the myQ account.
    *
    * login() must be called before this.
@@ -440,6 +485,81 @@ class MyQ {
         // is not a light and not because the service returned something invalid.
         throw new MyQError(
           `Device with serial number '${serialNumber}' is not a light.`,
+          constants.codes.INVALID_DEVICE
+        );
+      }
+
+      throw error;
+    }
+  }
+
+  /**
+   * Turn on or turn off a lamp on the myQ account.
+   *
+   * login() must be called before this.
+   *
+   * @param {string} serialNumber Serial number of lamp
+   * @param {symbol} action Action from MyQ.actions.lamp to request on lamp
+   * @returns {object} containing a success code
+   * @throws {MyQError} INVALID_ARGUMENT
+   * @throws {MyQError} LOGIN_REQUIRED
+   * @throws {MyQError} SERVICE_REQUEST_FAILED
+   * @throws {MyQError} SERVICE_UNREACHABLE
+   * @throws {MyQError} INVALID_SERVICE_RESPONSE
+   * @throws {MyQError} DEVICE_NOT_FOUND
+   * @throws {MyQError} INVALID_DEVICE
+   */
+  async setLampState(serialNumber, action) {
+    if (serialNumber === undefined) {
+      throw new MyQError(
+        'Serial number parameter is not specified.',
+        constants.codes.INVALID_ARGUMENT
+      );
+    }
+    if (typeof serialNumber !== 'string') {
+      throw new MyQError(
+        'Specified serial number parameter is not a string.',
+        constants.codes.INVALID_ARGUMENT
+      );
+    }
+    if (action === undefined) {
+      throw new MyQError('Action parameter is not specified.', constants.codes.INVALID_ARGUMENT);
+    }
+    if (typeof action !== 'symbol') {
+      throw new MyQError(
+        `Specified action parameter is not a symbol; valid actions are MyQ.actions.lamp.TURN_ON and MyQ.actions.lamp.TURN_OFF.`,
+        constants.codes.INVALID_ARGUMENT
+      );
+    }
+
+    // Map valid symbol actions to their string equivalents that the service accepts.
+    let _action;
+    switch (action) {
+      case actions.lamp.TURN_ON:
+        _action = constants._actions.lamp.turnOn;
+        break;
+      case actions.lamp.TURN_OFF:
+        _action = constants._actions.lamp.turnOff;
+        break;
+      default:
+        throw new MyQError(
+          `Invalid action parameter '${action.toString()}' specified for a lamp; valid actions are MyQ.actions.lamp.TURN_ON and MyQ.actions.lamp.TURN_OFF.`,
+          constants.codes.INVALID_ARGUMENT
+        );
+    }
+
+    try {
+      return await this._setDeviceState(
+        serialNumber,
+        _action,
+        constants._stateAttributes.lampState
+      );
+    } catch (error) {
+      if (error.code === constants.codes.DEVICE_STATE_NOT_FOUND) {
+        // If the state attribute is not found on the device, we assume this is because the device
+        // is not a lamp and not because the service returned something invalid.
+        throw new MyQError(
+          `Device with serial number '${serialNumber}' is not a lamp.`,
           constants.codes.INVALID_DEVICE
         );
       }

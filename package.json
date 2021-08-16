@@ -1,7 +1,7 @@
 {
-  "name": "myq-api",
-  "version": "2.0.4",
-  "description": "An updated API to interface with myQ devices",
+  "name": "@dre2901/myq-api",
+  "version": "2.0.5",
+  "description": "An updated API to interface with myQ devices. Fork of an original implementation done by Thomas Munduchira <thomas@thomasmunduchira.com> (https://thomasmunduchira.com/)",
   "keywords": [
     "myq",
     "chamberlain",
@@ -15,19 +15,25 @@
     "home",
     "api"
   ],
-  "homepage": "https://github.com/thomasmunduchira/myq-api",
+  "homepage": "https://github.com/dre2901/myq-api",
   "bugs": {
-    "url": "https://github.com/thomasmunduchira/myq-api/issues"
+    "url": "https://github.com/dre2901/myq-api/issues"
   },
   "license": "MIT",
   "author": "Thomas Munduchira <thomas@thomasmunduchira.com> (https://thomasmunduchira.com/)",
+  "contributors": [
+    {
+      "name": "Dimitry Remenyuk",
+      "email": "dre2901@gmail.com"
+    }
+  ],
   "main": "src/index.js",
   "files": [
     "src"
   ],
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/thomasmunduchira/myq-api.git"
+    "url": "git+https://github.com/dre2901/myq-api.git"
   },
   "scripts": {
     "lint": "eslint --ignore-path .gitignore ./",

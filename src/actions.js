@@ -7,6 +7,10 @@ const actions = {
     TURN_ON: Symbol('turnOn'),
     TURN_OFF: Symbol('turnOff'),
   }),
+  lamp: Object.freeze({
+    TURN_ON: Symbol('turnOn'),
+    TURN_OFF: Symbol('turnOff'),
+  }),
 };
 
 module.exports = actions;
